@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bahasa Jerman: Kosakata, Grammatik & C-Test</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js CDN for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-slate-900 font-bold p-2 rounded-lg flex items-center justify-center w-10 h-10 shadow">
+                    🇩🇪
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Deutsch B1-B2 Trainer</h1>
+                    <p class="text-xs text-slate-400">Kosakata, Grammatik & C-Test</p>
+                </div>
+            </div>
+
+            <!-- Stepper Indicators -->
+            <div class="flex items-center space-x-1 md:space-x-2 text-xs font-medium bg-slate-800 p-1.5 rounded-xl border border-slate-700 overflow-x-auto">
+                <button id="step-btn-vocab" onclick="switchStage('vocab')" class="px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow">
+                    <span>1. Kosakata</span>
+                </button>
+                <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
+                <button id="step-btn-grammar" onclick="switchStage('grammar')" class="px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-400 hover:text-white">
+                    <span>2. Grammatik</span>
+                </button>
+                <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
+                <button id="step-btn-ctest" onclick="switchStage('ctest')" class="px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-400 hover:text-white">
+                    <span>3. C-Test</span>
+                </button>
+                <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
+                <button id="step-btn-result" onclick="switchStage('result')" class="px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-400 hover:text-white">
+                    <span>4. Hasil</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 md:p-6">
+
+        <!-- Overall Progress Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="w-full md:w-2/3">
+                <div class="flex justify-between items-center mb-1.5 text-xs font-semibold text-slate-600">
+                    <span id="progress-label">Progres Pengerjaan</span>
+                    <span id="progress-percentage">0% Completed</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                    <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+                <button onclick="downloadAppCode()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-2 rounded-lg border border-slate-300 flex items-center space-x-1.5 transition">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Download App (.html)</span>
+                </button>
+                <button id="btn-quick-result" onclick="switchStage('result')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow transition">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Lihat Hasil Akhir</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STAGE 1: KOSAKATA QUIZ -->
+        <section id="stage-vocab" class="space-y-6">
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-5 rounded-2xl border border-amber-200 flex justify-between items-center">
+                <div>
+                    <span class="bg-amber-200 text-amber-900 text-xs font-bold px-2.5 py-1 rounded-md uppercase">Bagian 1</span>
+                    <h2 class="text-xl font-bold text-amber-950 mt-1">🇩🇪 Quiz Kosakata — Die erste Woche im Büro</h2>
+                    <p class="text-xs text-amber-800 mt-0.5">Pilih arti kata yang paling tepat sesuai dengan konteks kalimat Jerman yang diberikan.</p>
+                </div>
+                <div class="text-amber-700 font-bold text-sm bg-white px-3 py-1.5 rounded-xl border border-amber-200 shadow-sm">
+                    <span id="vocab-score-count">0</span> / 15 Selesai
+                </div>
+            </div>
+
+            <!-- Quiz Questions Container -->
+            <div id="vocab-questions-list" class="space-y-6"></div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-end pt-4">
+                <button onclick="switchStage('grammar')" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transition">
+                    <span>Lanjut ke Quiz Grammatik</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- STAGE 2: GRAMMATIK QUIZ -->
+        <section id="stage-grammar" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-5 rounded-2xl border border-blue-200 flex justify-between items-center">
+                <div>
+                    <span class="bg-blue-200 text-blue-900 text-xs font-bold px-2.5 py-1 rounded-md uppercase">Bagian 2</span>
+                    <h2 class="text-xl font-bold text-blue-950 mt-1">🇩🇪 Quiz Grammatik</h2>
+                    <p class="text-xs text-blue-800 mt-0.5">Lengkapi kalimat dengan tata bahasa Jerman yang tepat (Nebensatz, Relativsatz, Preposition, dll).</p>
+                </div>
+                <div class="text-blue-700 font-bold text-sm bg-white px-3 py-1.5 rounded-xl border border-blue-200 shadow-sm">
+                    <span id="grammar-score-count">0</span> / 10 Selesai
+                </div>
+            </div>
+
+            <!-- Grammar Questions List -->
+            <div id="grammar-questions-list" class="space-y-6"></div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-between pt-4">
+                <button onclick="switchStage('vocab')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold px-5 py-2.5 rounded-xl transition flex items-center space-x-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali ke Kosakata</span>
+                </button>
+                <button onclick="switchStage('ctest')" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transition">
+                    <span>Lanjut ke C-Test</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- STAGE 3: C-TEST -->
+        <section id="stage-ctest" class="space-y-6 hidden">
+            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-5 rounded-2xl border border-emerald-200 flex justify-between items-center">
+                <div>
+                    <span class="bg-emerald-200 text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-md uppercase">Bagian 3</span>
+                    <h2 class="text-xl font-bold text-emerald-950 mt-1">🇩🇪 C-Test: Meine erste Woche: Neue Arbeitsabläufe im Büro</h2>
+                    <p class="text-xs text-emerald-800 mt-0.5">Lengkapi bagian kata yang hilang (isi bagian akhiran kata yang terpotong).</p>
+                </div>
+                <div class="text-emerald-700 font-bold text-sm bg-white px-3 py-1.5 rounded-xl border border-emerald-200 shadow-sm">
+                    <span id="ctest-score-count">0</span> / 20 Isian Terisi
+                </div>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 leading-relaxed text-base md:text-lg">
+                <div id="ctest-interactive-text" class="space-y-4">
+                    <!-- Dynamic interactive C-Test paragraphs rendered via JS -->
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                    <button onclick="checkCTestAnswers()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Periksa Jawaban C-Test</span>
+                    </button>
+
+                    <button onclick="toggleCTestExplanation()" id="btn-ctest-explain-toggle" class="hidden text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold px-4 py-2.5 rounded-xl border border-slate-300 text-sm transition flex items-center space-x-2">
+                        <i class="fa-solid fa-language"></i>
+                        <span>Tampilkan Terjemahan & Penjelasan Lengkap (Bahasa Indonesia)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- C-Test Full Indonesian Translation & Grammar Explanation Panel -->
+            <div id="ctest-explanation-box" class="bg-slate-900 text-slate-100 p-6 md:p-8 rounded-2xl shadow-xl hidden space-y-6">
+                <div class="flex items-center space-x-3 border-b border-slate-700 pb-4">
+                    <div class="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
+                        <i class="fa-solid fa-book-open text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Penjelasan Lengkap Bahasa Indonesia — C-Test</h3>
+                        <p class="text-xs text-slate-400">Terjemahan lengkap teks serta rincian tata bahasa untuk setiap kata bergaris bawah.</p>
+                    </div>
+                </div>
+
+                <!-- Complete Indonesian Translation -->
+                <div class="bg-slate-800/80 p-5 rounded-xl border border-slate-700 space-y-2">
+                    <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-globe"></i>
+                        <span>Terjemahan Lengkap Teks:</span>
+                    </h4>
+                    <p class="text-sm text-slate-200 leading-relaxed italic">
+                        "Pada hari Senin minggu pertama saya dimulai di kantor baru. Saya sedikit gugup, <span class="text-emerald-400 font-semibold">tetapi (aber)</span> rekan-rekan baru saya sangat ramah. Pertama-tama atasan saya <span class="text-emerald-400 font-semibold">menunjukkan (zeigte)</span> tempat kerja dan <span class="text-emerald-400 font-semibold">menjelaskan (erklärte)</span> tugas-tugas apa yang harus saya ambil alih. Setelah itu saya <span class="text-emerald-400 font-semibold">berkenalan dengan (lernte ... kennen)</span> tim yang akan <span class="text-emerald-400 font-semibold">bekerja sama (zusammenarbeiten)</span> dalam beberapa bulan ke depan.
+                        Pada hari Selasa saya <span class="text-emerald-400 font-semibold">menghadiri (nahm ... teil)</span> rapat. Di sana beberapa topik penting <span class="text-emerald-400 font-semibold">dibahas (besprochen)</span>, dan saya juga boleh menyuarakan <span class="text-emerald-400 font-semibold">pendapat (Meinung)</span> saya. Meskipun saya masih sedikit <span class="text-emerald-400 font-semibold">pengalaman (Erfahrung)</span>, saya merasa semakin <span class="text-emerald-400 font-semibold">percaya diri/aman (sicherer)</span>. Rekan kerja saya membantu jika ada yang tidak saya <span class="text-emerald-400 font-semibold">pahami (verstanden)</span> dan menjelaskan <span class="text-emerald-400 font-semibold">alur kerja (Arbeitsabläufe)</span>.
+                        Pada hari Rabu saya <span class="text-emerald-400 font-semibold">mendapatkan (bekam)</span> tugas mandiri pertama saya. Saya harus menulis <span class="text-emerald-400 font-semibold">laporan (Bericht)</span> singkat lalu <span class="text-emerald-400 font-semibold">mengirimkannya (schicken)</span> ke atasan. Awalnya saya ragu, tetapi saya <span class="text-emerald-400 font-semibold">dapat (konnte)</span> <span class="text-emerald-400 font-semibold">menyelesaikannya (erledigen)</span> tepat waktu. Di akhir minggu saya <span class="text-emerald-400 font-semibold">menyadari (merkte)</span> bahwa tempat kerja baru memang bisa melelahkan, tetapi juga memberikan banyak <span class="text-emerald-400 font-semibold">kesempatan (Möglichkeiten)</span> untuk menimba <span class="text-emerald-400 font-semibold">pengalaman (Erfahrungen)</span> baru."
+                    </p>
+                </div>
+
+                <!-- Word Breakdown List -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>Rincian Pembahasan Akhiran Kata (C-Test Gap Key):</span>
+                    </h4>
+                    <div id="ctest-key-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-between pt-4">
+                <button onclick="switchStage('grammar')" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold px-5 py-2.5 rounded-xl transition flex items-center space-x-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali ke Grammatik</span>
+                </button>
+                <button onclick="switchStage('result')" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transition">
+                    <span>Lihat Rangkuman & Hasil Akhir</span>
+                    <i class="fa-solid fa-award"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- STAGE 4: HASIL & EVALUASI AKHIR -->
+        <section id="stage-result" class="space-y-6 hidden">
+            <div id="printable-area" class="space-y-6">
+                <!-- Header Score Card -->
+                <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-slate-700">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl font-black">
+                        🇩🇪
+                    </div>
+                    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div>
+                            <span class="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Laporan Hasil Latihan</span>
+                            <h2 class="text-2xl md:text-3xl font-extrabold mt-2">Ringkasan Evaluasi Belajar</h2>
+                            <p class="text-slate-300 text-xs md:text-sm mt-1">Hasil pengerjaan Quiz Kosakata, Grammatik & C-Test Bahasa Jerman.</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-center w-full md:w-auto min-w-[160px]">
+                            <div class="text-xs text-slate-300 uppercase tracking-widest font-semibold">Skor Akhir</div>
+                            <div id="final-percentage-display" class="text-3xl md:text-4xl font-black text-amber-400 mt-1">0%</div>
+                            <div id="final-badge-display" class="text-xs font-medium text-emerald-300 mt-1">Perlu Latihan</div>
+                        </div>
+                    </div>
+
+                    <!-- Score Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-700/80">
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400 font-medium">Quiz Kosakata (15 Soal)</div>
+                            <div class="text-xl font-bold text-amber-400 mt-1" id="score-vocab-text">0 / 15</div>
+                            <div class="w-full bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div id="bar-score-vocab" class="bg-amber-400 h-full w-0"></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400 font-medium">Quiz Grammatik (10 Soal)</div>
+                            <div class="text-xl font-bold text-blue-400 mt-1" id="score-grammar-text">0 / 10</div>
+                            <div class="w-full bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div id="bar-score-grammar" class="bg-blue-400 h-full w-0"></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400 font-medium">C-Test (20 Isian)</div>
+                            <div class="text-xl font-bold text-emerald-400 mt-1" id="score-ctest-text">0 / 20</div>
+                            <div class="w-full bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div id="bar-score-ctest" class="bg-emerald-400 h-full w-0"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Sections for Review -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="text-lg font-bold text-slate-900 border-b pb-3 flex items-center space-x-2">
+                        <i class="fa-solid fa-square-check text-emerald-600"></i>
+                        <span>Evaluasi Jawaban Kosakata & Grammatik</span>
+                    </h3>
+                    <div id="results-detailed-list" class="space-y-4">
+                        <!-- Populated dynamically via JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download and Action Bar -->
+            <div class="bg-slate-100 p-5 rounded-2xl border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <button onclick="resetAllQuizzes()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold px-5 py-2.5 rounded-xl transition flex items-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Ulangi Seluruh Test</span>
+                </button>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="downloadReportPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        <span>Download Hasil Latihan (PDF)</span>
+                    </button>
+                    <button onclick="downloadAppCode()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition flex items-center space-x-2">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Download Web App (.html)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // VOCABULARY QUESTIONS DATASET
+        const vocabQuestions = [
+            {
+                id: 1,
+                word: "übernehmen",
+                sentence: "Meine Chefin ist heute nicht da, deshalb muss ich ihre Aufgaben übernehmen.",
+                question: "Was bedeutet „übernehmen“ hier?",
+                options: [
+                    "Aufgaben ablehnen",
+                    "Aufgaben von jemandem machen",
+                    "Aufgaben erklären",
+                    "Aufgaben vergessen"
+                ],
+                answer: 1, // B
+                explanation: "<strong>übernehmen</strong> berarti mengambil alih atau menjalankan tanggung jawab/tugas dari orang lain."
+            },
+            {
+                id: 2,
+                word: "sich einarbeiten",
+                sentence: "In den ersten Wochen musste ich mich erst in die neuen Aufgaben einarbeiten.",
+                question: "Was bedeutet „sich einarbeiten“?",
+                options: [
+                    "neue Kollegen einstellen",
+                    "sich an eine neue Arbeit gewöhnen und sie lernen",
+                    "eine Arbeit kündigen",
+                    "eine Aufgabe delegieren"
+                ],
+                answer: 1, // B
+                explanation: "<strong>sich einarbeiten</strong> berarti menyesuaikan diri, membiasakan diri, dan mempelajari tugas-tugas di tempat kerja baru."
+            },
+            {
+                id: 3,
+                word: "Arbeitsablauf",
+                sentence: "Die neuen Mitarbeiter müssen zuerst die Arbeitsabläufe im Büro kennenlernen.",
+                question: "Was ist ein „Arbeitsablauf“?",
+                options: [
+                    "eine Person im Büro",
+                    "der Ablauf einer Arbeitsaufgabe",
+                    "ein Arbeitsvertrag",
+                    "ein Bürogebäude"
+                ],
+                answer: 1, // B
+                explanation: "<strong>der Arbeitsablauf</strong> berarti alur kerja atau tahapan proses penyelesaian suatu pekerjaan di kantor."
+            },
+            {
+                id: 4,
+                word: "sich äußern",
+                sentence: "Während der Besprechung durfte jeder seine Meinung zu dem Projekt äußern.",
+                question: "Was bedeutet „sich äußern“?",
+                options: [
+                    "eine Meinung ausdrücken",
+                    "eine Aufgabe übernehmen",
+                    "eine Frage vermeiden",
+                    "eine Besprechung verlassen"
+                ],
+                answer: 0, // A
+                explanation: "<strong>sich äußern</strong> berarti menyuarakan, mengungkapkan, atau menyatakan pendapat (eine Meinung ausdrücken)."
+            },
+            {
+                id: 5,
+                word: "selbstständig",
+                sentence: "Nach zwei Wochen konnte sie die meisten Aufgaben selbstständig erledigen.",
+                question: "Was bedeutet „selbstständig“?",
+                options: [
+                    "mit Hilfe anderer",
+                    "ohne Hilfe anderer",
+                    "besonders schnell",
+                    "nur gemeinsam mit anderen"
+                ],
+                answer: 1, // B
+                explanation: "<strong>selbstständig</strong> berarti mandiri atau melakukan sesuatu tanpa memerlukan bantuan orang lain (ohne Hilfe anderer)."
+            },
+            {
+                id: 6,
+                word: "nachfragen",
+                sentence: "Wenn ich etwas nicht verstehe, frage ich bei meiner Kollegin nach.",
+                question: "Was bedeutet „nachfragen“?",
+                options: [
+                    "etwas noch einmal fragen",
+                    "eine Frage beantworten",
+                    "eine Aufgabe übernehmen",
+                    "jemanden anrufen"
+                ],
+                answer: 0, // A
+                explanation: "<strong>nachfragen</strong> berarti bertanya kembali / meminta klarifikasi ulang jika belum memahami sesuatu secara jelas."
+            },
+            {
+                id: 7,
+                word: "rechtzeitig",
+                sentence: "Zum Glück konnte ich den Bericht rechtzeitig fertigstellen.",
+                question: "Was bedeutet „rechtzeitig“?",
+                options: [
+                    "viel zu früh",
+                    "bevor es zu spät ist",
+                    "nach dem Termin",
+                    "besonders schnell"
+                ],
+                answer: 1, // B
+                explanation: "<strong>rechtzeitig</strong> berarti tepat waktu / sebelum batas waktu terlambat (bevor es zu spät ist)."
+            },
+            {
+                id: 8,
+                word: "auslösen",
+                sentence: "Die Frage des Mitarbeiters löste eine lange Diskussion aus.",
+                question: "Was bedeutet „auslösen“ hier?",
+                options: [
+                    "etwas verhindern",
+                    "etwas beginnen oder verursachen",
+                    "etwas erklären",
+                    "etwas beenden"
+                ],
+                answer: 1, // B
+                explanation: "<strong>auslösen</strong> dalam konteks ini berarti memicu, menyebabkan, atau memulai suatu hal (misalnya memicu diskusi)."
+            },
+            {
+                id: 9,
+                word: "sich herausstellen",
+                sentence: "Später stellte sich heraus, dass das Problem viel einfacher war als gedacht.",
+                question: "Was bedeutet „sich herausstellen“?",
+                options: [
+                    "etwas wird später als Tatsache erkannt",
+                    "etwas wird absichtlich versteckt",
+                    "jemand stellt sich vor",
+                    "jemand beginnt eine neue Arbeit"
+                ],
+                answer: 0, // A
+                explanation: "<strong>sich herausstellen</strong> berarti ternyata / terbukti kemudian sebagai kenyataan atau fakta."
+            },
+            {
+                id: 10,
+                word: "Erfahrungen sammeln",
+                sentence: "Durch mein Praktikum konnte ich viele Erfahrungen sammeln.",
+                question: "Was bedeutet „Erfahrungen sammeln“?",
+                options: [
+                    "Erfahrungen vergessen",
+                    "Erfahrungen gewinnen",
+                    "Erfahrungen vermeiden",
+                    "Erfahrungen erklären"
+                ],
+                answer: 1, // B
+                explanation: "<strong>Erfahrungen sammeln</strong> berarti memperoleh, menimba, atau mendapatkan banyak pengalaman (Erfahrungen gewinnen)."
+            },
+            {
+                id: 11,
+                word: "anstrengend",
+                sentence: "Die erste Woche war zwar anstrengend, aber ich habe viel gelernt.",
+                question: "Was bedeutet „anstrengend“?",
+                options: [
+                    "entspannend",
+                    "viel Energie erfordernd",
+                    "langweilig",
+                    "einfach"
+                ],
+                answer: 1, // B
+                explanation: "<strong>anstrengend</strong> berarti melelahkan atau memerlukan banyak tenaga dan energi (viel Energie erfordernd)."
+            },
+            {
+                id: 12,
+                word: "Besprechung",
+                sentence: "Am Dienstag nahm ich an einer wichtigen Besprechung teil.",
+                question: "Was ist eine „Besprechung“?",
+                options: [
+                    "ein Gespräch über bestimmte Themen bei der Arbeit",
+                    "eine schriftliche Prüfung",
+                    "eine Bewerbung",
+                    "eine Pause"
+                ],
+                answer: 0, // A
+                explanation: "<strong>die Besprechung</strong> berarti rapat atau pertemuan resmi di tempat kerja untuk mendiskusikan topik tertentu."
+            },
+            {
+                id: 13,
+                word: "sich an etwas gewöhnen",
+                sentence: "Nach einigen Tagen gewöhnte ich mich an den neuen Arbeitsplatz.",
+                question: "Was bedeutet „sich an etwas gewöhnen“?",
+                options: [
+                    "etwas vergessen",
+                    "etwas nach und nach als normal empfinden",
+                    "etwas ablehnen",
+                    "etwas verändern"
+                ],
+                answer: 1, // B
+                explanation: "<strong>sich an etwas gewöhnen</strong> berarti terbiasa / perlahan-lahan menganggap sesuatu sebagai hal yang wajar dan normal."
+            },
+            {
+                id: 14,
+                word: "fertigstellen",
+                sentence: "Ich musste den Bericht bis Freitag fertigstellen.",
+                question: "Was bedeutet „fertigstellen“?",
+                options: [
+                    "anfangen",
+                    "fertig machen",
+                    "überprüfen",
+                    "verschieben"
+                ],
+                answer: 1, // B
+                explanation: "<strong>fertigstellen</strong> berarti menyelesaikan sesuatu sampai tuntas (fertig machen)."
+            },
+            {
+                id: 15,
+                word: "Möglichkeit",
+                sentence: "Ein Praktikum bietet jungen Menschen die Möglichkeit, Berufserfahrung zu sammeln.",
+                question: "Was bedeutet „Möglichkeit“ hier?",
+                options: [
+                    "Pflicht",
+                    "Gelegenheit/Chance",
+                    "Problem",
+                    "Entscheidung"
+                ],
+                answer: 1, // B
+                explanation: "<strong>die Möglichkeit</strong> berarti kesempatan atau peluang (Gelegenheit/Chance)."
+            }
+        ];
+
+        // GRAMMAR QUESTIONS DATASET
+        const grammarQuestions = [
+            {
+                id: 1,
+                title: "Nebensatz mit weil",
+                sentence: "Ich war nervös, weil ich noch wenig Erfahrung ______.",
+                options: ["hatte", "haben", "habe", "gehabt"],
+                answer: 0, // A
+                level: "B1",
+                explanation: "<strong>Nebensatz mit weil:</strong> Kata kerja terkonjugasi (<em>hatte</em>) harus diletakkan di posisi paling akhir klausa bawahan."
+            },
+            {
+                id: 2,
+                title: "Relativsatz",
+                sentence: "Das ist die Kollegin, ______ mir bei der Aufgabe geholfen hat.",
+                options: ["die", "der", "den", "dem"],
+                answer: 0, // A
+                level: "B1",
+                explanation: "<strong>Relativsatz:</strong> Kata ganti relatif merujuk pada kata benda feminin tunggal nominativ (<em>die Kollegin</em>), sehingga menggunakan <em>die</em>."
+            },
+            {
+                id: 3,
+                title: "an + Akkusativ bei „sich gewöhnen“",
+                sentence: "Ich muss mich noch ______ den neuen Arbeitsplatz gewöhnen.",
+                options: ["mit", "für", "an", "auf"],
+                answer: 2, // C
+                level: "B1",
+                explanation: "<strong>Verben mit Präpositionen:</strong> Kata kerja refleksif <em>sich gewöhnen</em> selalu berpasangan dengan preposisi <em>an + Akkusativ</em>."
+            },
+            {
+                id: 4,
+                title: "an + Dativ bei „teilnehmen“",
+                sentence: "Ich habe gestern ______ einer Besprechung teilgenommen.",
+                options: ["an", "auf", "für", "mit"],
+                answer: 0, // A -> an einer Besprechung
+                level: "B1",
+                explanation: "<strong>Verben mit Präpositionen:</strong> Kata kerja <em>teilnehmen</em> memerlukan preposisi <em>an + Dativ</em> (an einer Besprechung)."
+            },
+            {
+                id: 5,
+                title: "Modalverb + Infinitiv",
+                sentence: "Ich ______ die Aufgabe heute selbstständig erledigen.",
+                options: ["kann", "kannte", "konnte ich", "gekonnt"],
+                answer: 0, // A
+                level: "B1",
+                explanation: "<strong>Modalverb im Präsens:</strong> Subjek 'Ich' dipasangkan dengan <em>kann</em> di posisi 2, sedangkan kata kerja utama (<em>erledigen</em>) di akhir kalimat."
+            },
+            {
+                id: 6,
+                title: "Perfekt",
+                sentence: "Ich ______ in dieser Woche viel ______.",
+                options: ["habe / gelernt", "bin / gelernt", "habe / lernen", "werde / gelernt"],
+                answer: 0, // A
+                level: "B1",
+                explanation: "<strong>Perfekt mit haben:</strong> Kata kerja <em>lernen</em> membentuk Perfekt dengan kata kerja bantu <em>haben</em> + Partizip II (<em>gelernt</em>)."
+            },
+            {
+                id: 7,
+                title: "Infinitiv mit zu",
+                sentence: "Ich habe die Möglichkeit, neue Erfahrungen ______.",
+                options: ["sammeln", "zu sammeln", "gesammelt", "sammle"],
+                answer: 1, // B
+                level: "B1+",
+                explanation: "<strong>Infinitivkonstruktion mit zu:</strong> Ungkapan <em>die Möglichkeit haben</em> diikuti oleh struktur <em>zu + Infinitiv</em> di akhir klausa."
+            },
+            {
+                id: 8,
+                title: "Indirekte Frage",
+                sentence: "Meine Chefin erklärte mir, ______ Aufgaben ich übernehmen sollte.",
+                options: ["welche", "welchen", "was für", "ob welche"],
+                answer: 0, // A
+                level: "B1+",
+                explanation: "<strong>Indirekte W-Frage:</strong> Kata tanya <em>welche</em> menyesuaikan bentuk Akkusativ Plural untuk kata benda <em>Aufgaben</em>."
+            },
+            {
+                id: 9,
+                title: "obwohl (Konzessivsatz)",
+                sentence: "______ ich noch wenig Erfahrung hatte, konnte ich die Aufgabe erledigen.",
+                options: ["Weil", "Obwohl", "Deshalb", "Trotzdem"],
+                answer: 1, // B
+                level: "B1+",
+                explanation: "<strong>Konzessivsatz mit obwohl:</strong> <em>Obwohl</em> (meskipun/walaupun) menghubungkan klausa pertentangan yang diikuti kata kerja di akhir."
+            },
+            {
+                id: 10,
+                title: "sich herausstellen + dass",
+                sentence: "Später stellte sich heraus, ______ die Aufgabe schwieriger war als erwartet.",
+                options: ["ob", "dass", "weil", "wenn"],
+                answer: 1, // B
+                level: "B2",
+                explanation: "<strong>Dass-Satz nach sich herausstellen:</strong> Ungkapan <em>es stellt sich heraus</em> memicu klausa bawahan yang diawali dengan kata hubung <em>dass</em> (bahwa)."
+            }
+        ];
+
+        // C-TEST DATA STRUCTURE
+        const ctestItems = [
+            { id: 1, prefix: "ab", correct: "er", fullWord: "aber", hint: "kata hubung (tetapi)" },
+            { id: 2, prefix: "zei", correct: "gte", fullWord: "zeigte", hint: "Präteritum dari zeigen (menunjukkan)" },
+            { id: 3, prefix: "erkl", correct: "ärte", fullWord: "erklärte", hint: "Präteritum dari erklären (menjelaskan)" },
+            { id: 4, prefix: "ler", correct: "nte", fullWord: "lernte", hint: "Präteritum dari lernen (kennenlernen = berkenalan)" },
+            { id: 5, prefix: "zusammen", correct: "arbeiten", fullWord: "zusammenarbeiten", hint: "Infinitiv (bekerja sama)" },
+            { id: 6, prefix: "na", correct: "hm", fullWord: "nahm", hint: "Präteritum dari nehmen (teilnehmen = menghadiri)" },
+            { id: 7, prefix: "bespr", correct: "ochen", fullWord: "besprochen", hint: "Partizip II dari besprechen (dibahas)" },
+            { id: 8, prefix: "Mei", correct: "nung", fullWord: "Meinung", hint: "kata benda (pendapat)" },
+            { id: 9, prefix: "Erfa", correct: "hrung", fullWord: "Erfahrung", hint: "kata benda (pengalaman)" },
+            { id: 10, prefix: "sich", correct: "erer", fullWord: "sicherer", hint: "Komparativ dari sicher (semakin percaya diri)" },
+            { id: 11, prefix: "verst", correct: "anden", fullWord: "verstanden", hint: "Partizip II dari verstehen (dipahami)" },
+            { id: 12, prefix: "Arbeits", correct: "abläufe", fullWord: "Arbeitsabläufe", hint: "kata benda plural (alur kerja)" },
+            { id: 13, prefix: "bek", correct: "am", fullWord: "bekam", hint: "Präteritum dari bekommen (mendapatkan)" },
+            { id: 14, prefix: "Ber", correct: "icht", fullWord: "Bericht", hint: "kata benda (laporan)" },
+            { id: 15, prefix: "schi", correct: "cken", fullWord: "schicken", hint: "Infinitiv (mengirimkan)" },
+            { id: 16, prefix: "kon", correct: "nte", fullWord: "konnte", hint: "Präteritum Modalverb können (dapat)" },
+            { id: 17, prefix: "erle", correct: "digen", fullWord: "erledigen", hint: "Infinitiv (menyelesaikan)" },
+            { id: 18, prefix: "mer", correct: "kte", fullWord: "merkte", hint: "Präteritum dari merken (menyadari)" },
+            { id: 19, prefix: "Mögli", correct: "chkeiten", fullWord: "Möglichkeiten", hint: "kata benda plural (kesempatan/peluang)" },
+            { id: 20, prefix: "Erfah", correct: "rungen", fullWord: "Erfahrungen", hint: "kata benda plural (pengalaman-pengalaman)" }
+        ];
+
+        // State variables
+        let userVocabAnswers = {};
+        let userGrammarAnswers = {};
+        let userCTestAnswers = {};
+        let currentStage = 'vocab';
+
+        // Initialize Application on window load
+        window.onload = function() {
+            renderVocabQuestions();
+            renderGrammarQuestions();
+            renderCTest();
+            renderCTestBreakdown();
+            updateProgress();
+        };
+
+        // Switch Stage View
+        function switchStage(stage) {
+            currentStage = stage;
+            
+            // Hide all stages
+            document.getElementById('stage-vocab').classList.add('hidden');
+            document.getElementById('stage-grammar').classList.add('hidden');
+            document.getElementById('stage-ctest').classList.add('hidden');
+            document.getElementById('stage-result').classList.add('hidden');
+
+            // Reset button styles
+            const btnIds = ['step-btn-vocab', 'step-btn-grammar', 'step-btn-ctest', 'step-btn-result'];
+            btnIds.forEach(id => {
+                const el = document.getElementById(id);
+                el.className = "px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all text-slate-400 hover:text-white";
+            });
+
+            // Show selected stage & highlight active step
+            if(stage === 'vocab') {
+                document.getElementById('stage-vocab').classList.remove('hidden');
+                document.getElementById('step-btn-vocab').className = "px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow";
+            } else if(stage === 'grammar') {
+                document.getElementById('stage-grammar').classList.remove('hidden');
+                document.getElementById('step-btn-grammar').className = "px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-blue-500 text-white font-semibold shadow";
+            } else if(stage === 'ctest') {
+                document.getElementById('stage-ctest').classList.remove('hidden');
+                document.getElementById('step-btn-ctest').className = "px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-emerald-500 text-white font-semibold shadow";
+            } else if(stage === 'result') {
+                calculateAndRenderResults();
+                document.getElementById('stage-result').classList.remove('hidden');
+                document.getElementById('step-btn-result').className = "px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition-all bg-indigo-500 text-white font-semibold shadow";
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateProgress();
+        }
+
+        function renderVocabQuestions() {
+            const container = document.getElementById('vocab-questions-list');
+            container.innerHTML = '';
+
+            vocabQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 transition space-y-4";
+                card.id = `vocab-card-${idx}`;
+
+                let optionsHTML = '';
+                const labels = ['A', 'B', 'C', 'D'];
+
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <button onclick="selectVocabOption(${idx}, ${optIdx})" 
+                                id="vocab-opt-${idx}-${optIdx}" 
+                                class="w-full text-left p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 flex items-center space-x-3 transition font-medium text-slate-700">
+                            <span class="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold text-xs flex items-center justify-center text-slate-600 shadow-sm shrink-0">
+                                ${labels[optIdx]}
+                            </span>
+                            <span class="text-sm md:text-base">${opt}</span>
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-1 rounded-md">Soal ${q.id} dari 15</span>
+                        <span class="text-xs font-semibold text-slate-400">Kata Utama: <strong class="text-amber-700 font-bold">${q.word}</strong></span>
+                    </div>
+
+                    <div class="bg-amber-50/60 p-3.5 rounded-xl border border-amber-100 text-slate-800 text-sm md:text-base italic">
+                        "${q.sentence}"
+                    </div>
+
+                    <p class="font-semibold text-slate-900 text-base">${q.question}</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        ${optionsHTML}
+                    </div>
+
+                    <!-- Indonesian Explanation Box -->
+                    <div id="vocab-explain-${idx}" class="hidden mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed transition-all"></div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function selectVocabOption(qIdx, optIdx) {
+            userVocabAnswers[qIdx] = optIdx;
+            const q = vocabQuestions[qIdx];
+            const isCorrect = (optIdx === q.answer);
+
+            // Update Option Button Styles
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`vocab-opt-${qIdx}-${i}`);
+                btn.disabled = true;
+                btn.className = "w-full text-left p-3.5 rounded-xl border flex items-center space-x-3 transition font-medium opacity-60 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed";
+
+                if (i === q.answer) {
+                    // Correct answer GREEN
+                    btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold flex items-center space-x-3 shadow-sm";
+                }
+            });
+
+            if (!isCorrect) {
+                // User selected wrong answer RED
+                const wrongBtn = document.getElementById(`vocab-opt-${qIdx}-${optIdx}`);
+                wrongBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-bold flex items-center space-x-3 shadow-sm";
+            }
+
+            // Show Indonesian Explanation Box
+            const explainBox = document.getElementById(`vocab-explain-${qIdx}`);
+            explainBox.classList.remove('hidden');
+            if (isCorrect) {
+                explainBox.className = "mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-900";
+                explainBox.innerHTML = `<div class="font-bold mb-1 flex items-center space-x-1.5 text-emerald-800"><i class="fa-solid fa-circle-check"></i> <span>Benar! (Richtig)</span></div> <div>${q.explanation}</div>`;
+            } else {
+                explainBox.className = "mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed bg-rose-50 border border-rose-200 text-rose-900";
+                explainBox.innerHTML = `<div class="font-bold mb-1 flex items-center space-x-1.5 text-rose-800"><i class="fa-solid fa-circle-xmark"></i> <span>Salah (Falsch) — Jawaban Benar: Option ${['A','B','C','D'][q.answer]}</span></div> <div>${q.explanation}</div>`;
+            }
+
+            document.getElementById('vocab-score-count').innerText = Object.keys(userVocabAnswers).length;
+            updateProgress();
+        }
+
+        function renderGrammarQuestions() {
+            const container = document.getElementById('grammar-questions-list');
+            container.innerHTML = '';
+
+            grammarQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 transition space-y-4";
+                card.id = `grammar-card-${idx}`;
+
+                let optionsHTML = '';
+                const labels = ['A', 'B', 'C', 'D'];
+
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <button onclick="selectGrammarOption(${idx}, ${optIdx})" 
+                                id="grammar-opt-${idx}-${optIdx}" 
+                                class="w-full text-left p-3.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 flex items-center space-x-3 transition font-medium text-slate-700">
+                            <span class="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold text-xs flex items-center justify-center text-slate-600 shadow-sm shrink-0">
+                                ${labels[optIdx]}
+                            </span>
+                            <span class="text-sm md:text-base">${opt}</span>
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold bg-blue-100 text-blue-900 px-2.5 py-1 rounded-md">Soal ${q.id} dari 10</span>
+                        <span class="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-300">Level: ${q.level}</span>
+                    </div>
+
+                    <div class="text-xs font-bold text-blue-700 uppercase tracking-wide">
+                        Topic: ${q.title}
+                    </div>
+
+                    <p class="font-semibold text-slate-900 text-base md:text-lg bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        ${q.sentence}
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        ${optionsHTML}
+                    </div>
+
+                    <!-- Indonesian Grammar Explanation Box -->
+                    <div id="grammar-explain-${idx}" class="hidden mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed transition-all"></div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function selectGrammarOption(qIdx, optIdx) {
+            userGrammarAnswers[qIdx] = optIdx;
+            const q = grammarQuestions[qIdx];
+            const isCorrect = (optIdx === q.answer);
+
+            // Update Option Button Styles
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`grammar-opt-${qIdx}-${i}`);
+                btn.disabled = true;
+                btn.className = "w-full text-left p-3.5 rounded-xl border flex items-center space-x-3 transition font-medium opacity-60 bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed";
+
+                if (i === q.answer) {
+                    // Correct answer GREEN
+                    btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold flex items-center space-x-3 shadow-sm";
+                }
+            });
+
+            if (!isCorrect) {
+                // User selected wrong answer RED
+                const wrongBtn = document.getElementById(`grammar-opt-${qIdx}-${optIdx}`);
+                wrongBtn.className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-bold flex items-center space-x-3 shadow-sm";
+            }
+
+            // Show Indonesian Explanation Box
+            const explainBox = document.getElementById(`grammar-explain-${qIdx}`);
+            explainBox.classList.remove('hidden');
+            if (isCorrect) {
+                explainBox.className = "mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-900";
+                explainBox.innerHTML = `<div class="font-bold mb-1 flex items-center space-x-1.5 text-emerald-800"><i class="fa-solid fa-circle-check"></i> <span>Benar! (Richtig)</span></div> <div>${q.explanation}</div>`;
+            } else {
+                explainBox.className = "mt-4 p-4 rounded-xl text-xs md:text-sm leading-relaxed bg-rose-50 border border-rose-200 text-rose-900";
+                explainBox.innerHTML = `<div class="font-bold mb-1 flex items-center space-x-1.5 text-rose-800"><i class="fa-solid fa-circle-xmark"></i> <span>Salah (Falsch) — Jawaban Benar: Option ${['A','B','C','D'][q.answer]}</span></div> <div>${q.explanation}</div>`;
+            }
+
+            document.getElementById('grammar-score-count').innerText = Object.keys(userGrammarAnswers).length;
+            updateProgress();
+        }
+
+        function renderCTest() {
+            const container = document.getElementById('ctest-interactive-text');
+            
+            // Format interactive paragraphs with input gaps
+            container.innerHTML = `
+                <p>
+                    Am Montag begann meine erste Woche im neuen Büro. Ich war etwas nervös, 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">ab</span>
+                        <input type="text" id="ctest-input-1" oninput="onCTestInput(1)" class="w-12 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="__">
+                    </span>
+                    meine neuen Kollegen waren sehr freundlich. Zuerst 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">zei</span>
+                        <input type="text" id="ctest-input-2" oninput="onCTestInput(2)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="___">
+                    </span>
+                    mir meine Chefin den Arbeitsplatz und 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">erkl</span>
+                        <input type="text" id="ctest-input-3" oninput="onCTestInput(3)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="____">
+                    </span>
+                    mir, welche Aufgaben ich übernehmen sollte. Danach 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">ler</span>
+                        <input type="text" id="ctest-input-4" oninput="onCTestInput(4)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="___">
+                    </span>
+                    ich das Team kennen, mit dem ich in den nächsten Monaten 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">zusammen</span>
+                        <input type="text" id="ctest-input-5" oninput="onCTestInput(5)" class="w-24 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="________">
+                    </span>
+                    werde.
+                </p>
+
+                <p>
+                    Am Dienstag 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">na</span>
+                        <input type="text" id="ctest-input-6" oninput="onCTestInput(6)" class="w-12 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="__">
+                    </span>
+                    ich an einer Besprechung teil. Dort wurden einige wichtige Themen 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">bespr</span>
+                        <input type="text" id="ctest-input-7" oninput="onCTestInput(7)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_____">
+                    </span>,
+                    und ich durfte auch meine 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Mei</span>
+                        <input type="text" id="ctest-input-8" oninput="onCTestInput(8)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="____">
+                    </span>
+                    äußern. Obwohl ich noch wenig 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Erfa</span>
+                        <input type="text" id="ctest-input-9" oninput="onCTestInput(9)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_____">
+                    </span>
+                    hatte, fühlte ich mich immer 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">sich</span>
+                        <input type="text" id="ctest-input-10" oninput="onCTestInput(10)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="____">
+                    </span>.
+                    Meine Kollegin half mir, wenn ich etwas nicht 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">verst</span>
+                        <input type="text" id="ctest-input-11" oninput="onCTestInput(11)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_____">
+                    </span>
+                    hatte, und erklärte mir die 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Arbeits</span>
+                        <input type="text" id="ctest-input-12" oninput="onCTestInput(12)" class="w-20 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_______">
+                    </span>.
+                </p>
+
+                <p>
+                    Am Mittwoch 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">bek</span>
+                        <input type="text" id="ctest-input-13" oninput="onCTestInput(13)" class="w-12 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="___">
+                    </span>
+                    ich meine erste eigene Aufgabe. Ich musste einen kurzen 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Ber</span>
+                        <input type="text" id="ctest-input-14" oninput="onCTestInput(14)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="____">
+                    </span>
+                    schreiben und anschließend an meine Chefin 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">schi</span>
+                        <input type="text" id="ctest-input-15" oninput="onCTestInput(15)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="____">
+                    </span>.
+                    Zuerst war ich unsicher, aber ich 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">kon</span>
+                        <input type="text" id="ctest-input-16" oninput="onCTestInput(16)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="___">
+                    </span>
+                    die Aufgabe rechtzeitig 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">erle</span>
+                        <input type="text" id="ctest-input-17" oninput="onCTestInput(17)" class="w-16 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_____">
+                    </span>.
+                </p>
+
+                <p>
+                    Am Ende der Woche 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">mer</span>
+                        <input type="text" id="ctest-input-18" oninput="onCTestInput(18)" class="w-14 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="___">
+                    </span>
+                    ich, dass ein neuer Arbeitsplatz zwar anstrengend sein kann, aber auch viele 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Mögli</span>
+                        <input type="text" id="ctest-input-19" oninput="onCTestInput(19)" class="w-20 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="_______">
+                    </span>
+                    bietet, neue 
+                    <span class="inline-flex items-baseline space-x-0.5">
+                        <span class="font-bold text-slate-800">Erfah</span>
+                        <input type="text" id="ctest-input-20" oninput="onCTestInput(20)" class="w-18 text-center font-bold text-emerald-700 bg-slate-100 border-b-2 border-slate-400 focus:border-emerald-600 focus:bg-emerald-50 focus:outline-none px-1 py-0.5 rounded-t text-sm md:text-base" placeholder="______">
+                    </span>
+                    zu sammeln.
+                </p>
+            `;
+        }
+
+        function onCTestInput(id) {
+            const val = document.getElementById(`ctest-input-${id}`).value.trim();
+            userCTestAnswers[id] = val;
+            
+            let filledCount = 0;
+            ctestItems.forEach(item => {
+                if(userCTestAnswers[item.id] && userCTestAnswers[item.id].length > 0) filledCount++;
+            });
+            document.getElementById('ctest-score-count').innerText = filledCount;
+            updateProgress();
+        }
+
+        function checkCTestAnswers() {
+            ctestItems.forEach(item => {
+                const inputEl = document.getElementById(`ctest-input-${item.id}`);
+                const userVal = (userCTestAnswers[item.id] || "").trim().toLowerCase();
+                const correctVal = item.correct.toLowerCase();
+
+                if (userVal === correctVal) {
+                    inputEl.className = "w-auto min-w-[3rem] text-center font-bold text-emerald-950 bg-emerald-100 border-2 border-emerald-500 focus:outline-none px-1 py-0.5 rounded text-sm md:text-base shadow-sm";
+                } else {
+                    inputEl.className = "w-auto min-w-[3rem] text-center font-bold text-rose-950 bg-rose-100 border-2 border-rose-500 focus:outline-none px-1 py-0.5 rounded text-sm md:text-base shadow-sm";
+                    inputEl.title = `Benar: ${item.prefix}${item.correct}`;
+                }
+            });
+
+            // Reveal Indonesian explanation box toggle button
+            document.getElementById('btn-ctest-explain-toggle').classList.remove('hidden');
+            document.getElementById('ctest-explanation-box').classList.remove('hidden');
+            document.getElementById('ctest-explanation-box').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleCTestExplanation() {
+            const box = document.getElementById('ctest-explanation-box');
+            box.classList.toggle('hidden');
+        }
+
+        function renderCTestBreakdown() {
+            const container = document.getElementById('ctest-key-breakdown');
+            container.innerHTML = '';
+
+            ctestItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-800 p-3 rounded-lg border border-slate-700 flex justify-between items-center";
+                div.innerHTML = `
+                    <div>
+                        <span class="text-amber-400 font-bold font-mono text-sm">${item.id}. ${item.prefix}<u class="text-emerald-400">${item.correct}</u></span>
+                        <span class="text-slate-300 ml-2">(${item.fullWord})</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-700">${item.hint}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateProgress() {
+            const totalTasks = vocabQuestions.length + grammarQuestions.length + ctestItems.length; // 15 + 10 + 20 = 45
+            const completedTasks = Object.keys(userVocabAnswers).length + Object.keys(userGrammarAnswers).length + Object.keys(userCTestAnswers).length;
+
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-percentage').innerText = `${percentage}% Selesai (${completedTasks}/${totalTasks})`;
+        }
+
+        function calculateAndRenderResults() {
+            // Vocab Score
+            let vocabCorrect = 0;
+            vocabQuestions.forEach((q, idx) => {
+                if (userVocabAnswers[idx] === q.answer) vocabCorrect++;
+            });
+
+            // Grammar Score
+            let grammarCorrect = 0;
+            grammarQuestions.forEach((q, idx) => {
+                if (userGrammarAnswers[idx] === q.answer) grammarCorrect++;
+            });
+
+            // C-Test Score
+            let ctestCorrect = 0;
+            ctestItems.forEach(item => {
+                const userVal = (userCTestAnswers[item.id] || "").trim().toLowerCase();
+                if (userVal === item.correct.toLowerCase()) ctestCorrect++;
+            });
+
+            const totalScore = vocabCorrect + grammarCorrect + ctestCorrect;
+            const maxScore = vocabQuestions.length + grammarQuestions.length + ctestItems.length; // 45
+            const finalPercent = Math.round((totalScore / maxScore) * 100);
+
+            // Update Score Display Elements
+            document.getElementById('score-vocab-text').innerText = `${vocabCorrect} / ${vocabQuestions.length}`;
+            document.getElementById('bar-score-vocab').style.width = `${Math.round((vocabCorrect/vocabQuestions.length)*100)}%`;
+
+            document.getElementById('score-grammar-text').innerText = `${grammarCorrect} / ${grammarQuestions.length}`;
+            document.getElementById('bar-score-grammar').style.width = `${Math.round((grammarCorrect/grammarQuestions.length)*100)}%`;
+
+            document.getElementById('score-ctest-text').innerText = `${ctestCorrect} / ${ctestItems.length}`;
+            document.getElementById('bar-score-ctest').style.width = `${Math.round((ctestCorrect/ctestItems.length)*100)}%`;
+
+            document.getElementById('final-percentage-display').innerText = `${finalPercent}%`;
+
+            let badgeText = "Perlu Lebih Banyak Latihan";
+            if (finalPercent >= 85) badgeText = "Luar Biasa! (Sehr Gut) 🎉";
+            else if (finalPercent >= 70) badgeText = "Bagus Sekali! (Gut) 👍";
+            else if (finalPercent >= 55) badgeText = "Cukup Bagus (Befriedigend)";
+
+            document.getElementById('final-badge-display').innerText = badgeText;
+
+            // Render Detailed Review List
+            const detailedContainer = document.getElementById('results-detailed-list');
+            detailedContainer.innerHTML = '';
+
+            // Vocab Review
+            vocabQuestions.forEach((q, idx) => {
+                const userAns = userVocabAnswers[idx];
+                const isCorrect = userAns === q.answer;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'} space-y-1.5`;
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold uppercase tracking-wider ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}">Quiz Kosakata #${q.id} — ${q.word}</span>
+                        <span class="font-bold px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-200 text-emerald-900' : 'bg-rose-200 text-rose-900'}">${isCorrect ? 'BENAR 🟢' : 'SALAH 🔴'}</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-800">Kalimat: "${q.sentence}"</p>
+                    <p class="text-xs text-slate-600">Jawaban Anda: <strong class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${userAns !== undefined ? q.options[userAns] : 'Belum Dijawab'}</strong> | Jawaban Benar: <strong class="text-emerald-700">${q.options[q.answer]}</strong></p>
+                    <p class="text-xs text-slate-600 pt-1 border-t border-slate-200/60">${q.explanation}</p>
+                `;
+                detailedContainer.appendChild(itemDiv);
+            });
+
+            // Grammar Review
+            grammarQuestions.forEach((q, idx) => {
+                const userAns = userGrammarAnswers[idx];
+                const isCorrect = userAns === q.answer;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'} space-y-1.5`;
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold uppercase tracking-wider ${isCorrect ? 'text-emerald-800' : 'text-rose-800'}">Quiz Grammatik #${q.id} — ${q.title}</span>
+                        <span class="font-bold px-2 py-0.5 rounded ${isCorrect ? 'bg-emerald-200 text-emerald-900' : 'bg-rose-200 text-rose-900'}">${isCorrect ? 'BENAR 🟢' : 'SALAH 🔴'}</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-800">${q.sentence}</p>
+                    <p class="text-xs text-slate-600">Jawaban Anda: <strong class="${isCorrect ? 'text-emerald-700' : 'text-rose-700'}">${userAns !== undefined ? q.options[userAns] : 'Belum Dijawab'}</strong> | Jawaban Benar: <strong class="text-emerald-700">${q.options[q.answer]}</strong></p>
+                    <p class="text-xs text-slate-600 pt-1 border-t border-slate-200/60">${q.explanation}</p>
+                `;
+                detailedContainer.appendChild(itemDiv);
+            });
+        }
+
+        // Reset Quiz
+        function resetAllQuizzes() {
+            if(confirm("Apakah Anda yakin ingin mengulang seluruh quiz dari awal?")) {
+                userVocabAnswers = {};
+                userGrammarAnswers = {};
+                userCTestAnswers = {};
+                renderVocabQuestions();
+                renderGrammarQuestions();
+                renderCTest();
+                document.getElementById('btn-ctest-explain-toggle').classList.add('hidden');
+                document.getElementById('ctest-explanation-box').classList.add('hidden');
+                document.getElementById('vocab-score-count').innerText = "0";
+                document.getElementById('grammar-score-count').innerText = "0";
+                document.getElementById('ctest-score-count').innerText = "0";
+                switchStage('vocab');
+            }
+        }
+
+        // Download PDF Report using html2pdf.js
+        function downloadReportPDF() {
+            const element = document.getElementById('printable-area');
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     'Hasil_Latihan_Bahasa_Jerman_B1_B2.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Direct Download of Application Source Code HTML File
+        function downloadAppCode() {
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'German_Vocabulary_Grammar_CTest_Trainer.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
